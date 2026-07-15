@@ -31,6 +31,12 @@ export default function Login() {
                 {error && <p style={{ color: 'red' }}>{error}</p>}
                 <button type="submit">Entrar</button>
             </form>
+
+            <p>— o —</p>
+            <button onClick={() => window.location.href = 'http://localhost:8080/oauth2/authorization/google'}>
+                Continuar con Google
+            </button>
+
             <p>¿No tienes cuenta? <Link to="/register">Regístrate</Link></p>
         </div>
     );

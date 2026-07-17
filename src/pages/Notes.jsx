@@ -30,6 +30,11 @@ export default function Notes() {
         loadNotes();
     };
 
+    const handleSummarize = async (id) => {
+        await axiosInstance.post(`/notes/${id}/summarize`);
+        loadNotes();
+    };
+
     return (
         <div>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -50,6 +55,8 @@ export default function Notes() {
                     <li key={note.id}>
                         <strong>{note.title}</strong>
                         <p>{note.content}</p>
+                        {note.aiSummary && <p><em>Resumen IA: {note.aiSummary}</em></p>}
+                        <button onClick={() => handleSummarize(note.id)}>Resumir con IA</button>
                         <button onClick={() => handleDelete(note.id)}>Borrar</button>
                     </li>
                 ))}

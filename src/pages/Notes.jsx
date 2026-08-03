@@ -169,7 +169,7 @@ export default function Notes() {
                                             ?.split(/(?=\n|- )/) 
                                             .map(line => line.trim())
                                             .filter(line => line.length > 0)
-                                            .slice(0, 4) // Mostramos máximo 4 líneas independientes
+                                            .slice(0, 3)
                                             .map((line, idx) => (
                                                 <p key={idx} className="single-line-text">
                                                     {line}
@@ -236,11 +236,13 @@ export default function Notes() {
 function ViewNoteModal({ note, busyId, onClose, onDelete, onSave, onSummarize, onRewrite, onToggleItem }) {
     const [title, setTitle] = useState(note.title);
     const [content, setContent] = useState(note.content || '');
+    const [items, setItems] = useState(note.items || []);
     const [isEditing, setIsEditing] = useState(false);
 
     useEffect(() => {
         setTitle(note.title);
         setContent(note.content || '');
+        setItems(note.items || []);
         setIsEditing(false);
     }, [note]);
 
@@ -254,12 +256,49 @@ function ViewNoteModal({ note, busyId, onClose, onDelete, onSave, onSummarize, o
         setIsEditing(true);
     };
 
+    const handleChecklistItemTextChange = (itemId, text) => {
+        setItems(prev => prev.map(item => item.id === itemId ? { ...item, text } : item));
+        setIsEditing(true);
+    };
+
+    const handleChecklistItemToggle = (itemId, checked) => {
+        setItems(prev => prev.map(item => item.id === itemId ? { ...item, checked } : item));
+        setIsEditing(true);
+        if (note.type === 'CHECKLIST') {
+            const currentItem = items.find(item => item.id === itemId);
+            if (currentItem) {
+                onToggleItem(note.id, itemId, checked);
+            }
+        }
+    };
+
+    const handleAddChecklistItem = () => {
+        const newItem = {
+            id: typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `item-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+            text: '',
+            checked: false,
+        };
+        setItems(prev => [...prev, newItem]);
+        setIsEditing(true);
+    };
+
+    const handleRemoveChecklistItem = (itemId) => {
+        setItems(prev => prev.filter(item => item.id !== itemId));
+        setIsEditing(true);
+    };
+
     const handleSaveChanges = async () => {
+        const normalizedItems = (items || []).map((item) => ({
+            id: item.id,
+            text: item.text?.trim() || '',
+            checked: Boolean(item.checked),
+        })).filter((item) => item.text.length > 0 || item.checked);
+
         await onSave(note.id, {
-            title,
+            title: title.trim(),
             type: note.type,
             content: note.type === 'TEXT' ? content : null,
-            items: null,
+            items: note.type === 'CHECKLIST' ? normalizedItems : null,
         });
         setIsEditing(false);
     };
@@ -267,6 +306,7 @@ function ViewNoteModal({ note, busyId, onClose, onDelete, onSave, onSummarize, o
     const handleCancelChanges = () => {
         setTitle(note.title);
         setContent(note.content || '');
+        setItems(note.items || []);
         setIsEditing(false);
     };
 
@@ -323,20 +363,39 @@ function ViewNoteModal({ note, busyId, onClose, onDelete, onSave, onSummarize, o
                                 rows={8}
                             />
                         ) : (
-                            <ul className="full-checklist">
-                                {note.items?.map((item) => (
-                                    <li key={item.id}>
-                                        <label>
-                                            <input
-                                                type="checkbox"
-                                                checked={item.checked}
-                                                onChange={(e) => onToggleItem(note.id, item.id, e.target.checked)}
-                                            />
-                                            <span className={item.checked ? 'checked' : ''}>{item.text}</span>
-                                        </label>
-                                    </li>
-                                ))}
-                            </ul>
+                            <>
+                                <ul className="full-checklist">
+                                    {items.map((item) => (
+                                        <li key={item.id} className="checklist-edit-row">
+                                            <label className="checklist-edit-main">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={item.checked}
+                                                    onChange={(e) => handleChecklistItemToggle(item.id, e.target.checked)}
+                                                />
+                                                <input
+                                                    type="text"
+                                                    className="checklist-item-input"
+                                                    value={item.text}
+                                                    onChange={(e) => handleChecklistItemTextChange(item.id, e.target.value)}
+                                                    placeholder="Escribe una tarea..."
+                                                />
+                                            </label>
+                                            <button
+                                                type="button"
+                                                className="btn-icon-delete"
+                                                onClick={() => handleRemoveChecklistItem(item.id)}
+                                                title="Eliminar fila"
+                                            >
+                                                ✕
+                                            </button>
+                                        </li>
+                                    ))}
+                                </ul>
+                                <button type="button" className="btn-add-item" onClick={handleAddChecklistItem}>
+                                    + Añadir fila
+                                </button>
+                            </>
                         )}
                     </div>
 

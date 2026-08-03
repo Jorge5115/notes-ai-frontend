@@ -126,7 +126,8 @@ body {
     max-width: 100%;
     min-width: 0;
     box-sizing: border-box;
-    height: 200px;
+    min-height: 220px;
+    height: 240px;
     transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
     user-select: none;
     overflow: hidden;
@@ -176,6 +177,8 @@ body {
     font-size: 0.88rem;
     color: var(--text-muted);
     min-width: 0;
+    display: flex;
+    flex-direction: column;
 }
 
 .text-snippet {
@@ -518,6 +521,43 @@ body {
 .full-checklist span.checked {
     text-decoration: line-through;
     color: var(--text-muted);
+}
+
+.checklist-edit-row {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.checklist-edit-main {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex: 1;
+}
+
+.checklist-item-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-main);
+    padding: 0.35rem 0;
+    outline: none;
+}
+
+.checklist-item-input:focus {
+    border-color: var(--accent);
+}
+
+.btn-add-item {
+    margin-top: 0.7rem;
+    background: transparent;
+    border: 1px dashed var(--accent);
+    color: var(--accent);
+    padding: 0.55rem 0.8rem;
+    border-radius: 8px;
+    cursor: pointer;
 }
 
 /* Inputs de creación */

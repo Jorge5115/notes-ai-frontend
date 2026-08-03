@@ -288,19 +288,28 @@ function ViewNoteModal({ note, busyId, onClose, onDelete, onSave, onSummarize, o
     };
 
     const handleSaveChanges = async () => {
-        const normalizedItems = (items || []).map((item) => ({
-            id: item.id,
-            text: item.text?.trim() || '',
-            checked: Boolean(item.checked),
-        })).filter((item) => item.text.length > 0 || item.checked);
+        try {
+            const normalizedItems = (items || [])
+            .map((item) => ({
+                // 💡 Si el ID no es un número (ej. es un UUID string del frontend), enviamos null
+                id: (typeof item.id === 'number') ? item.id : null, 
+                text: typeof item === 'string' ? item.trim() : (item.text?.trim() || ''),
+                checked: Boolean(item.checked),
+            }))
+            .filter((item) => item.text.length > 0);
 
-        await onSave(note.id, {
+            const payload = {
             title: title.trim(),
             type: note.type,
             content: note.type === 'TEXT' ? content : null,
             items: note.type === 'CHECKLIST' ? normalizedItems : null,
-        });
-        setIsEditing(false);
+            };
+
+            await onSave(note.id, payload);
+            setIsEditing(false);
+        } catch (error) {
+            console.error("Error al guardar cambios:", error);
+        }
     };
 
     const handleCancelChanges = () => {
@@ -341,14 +350,14 @@ function ViewNoteModal({ note, busyId, onClose, onDelete, onSave, onSummarize, o
                                         onClick={() => onSummarize(note.id)}
                                         disabled={busyId === note.id}
                                     >
-                                        {busyId === note.id ? 'Generando...' : 'Resumir con IA'}
+                                        {busyId === note.id ? 'Generando...' : 'Generar resumen con IA'}
                                     </button>
                                     <button
                                         className="btn-action-ai outline"
                                         onClick={() => onRewrite(note.id)}
                                         disabled={busyId === note.id}
                                     >
-                                        {busyId === note.id ? 'Procesando...' : 'Hacer más breve'}
+                                        {busyId === note.id ? 'Procesando...' : 'Acortar / Reescribir con IA'}
                                     </button>
                                 </div>
                             )}
@@ -439,8 +448,6 @@ function NewNoteModal({ onClose, onCreated }) {
     const [type, setType] = useState('TEXT');
     const [useAi, setUseAi] = useState(false);
     const [title, setTitle] = useState('');
-    const [content, setContent] = useState('');
-    const [itemsText, setItemsText] = useState('');
     const [prompt, setPrompt] = useState('');
     const [submitting, setSubmitting] = useState(false);
 
@@ -449,14 +456,21 @@ function NewNoteModal({ onClose, onCreated }) {
         setSubmitting(true);
         try {
             if (useAi) {
-                await axiosInstance.post('/notes/generate', { title, type, prompt });
-            } else if (type === 'TEXT') {
-                await axiosInstance.post('/notes', { title, type, content, items: null });
+                // Generar nota con la IA a partir del prompt
+                await axiosInstance.post('/notes/generate', { title: title.trim(), type, prompt });
             } else {
-                const items = itemsText.split('\n').map((s) => s.trim()).filter(Boolean);
-                await axiosInstance.post('/notes', { title, type, content: null, items });
+                // Crear nota vacía (solo título)
+                const payload = {
+                    title: title.trim(),
+                    type,
+                    content: type === 'TEXT' ? '' : null,
+                    items: type === 'CHECKLIST' ? [] : null
+                };
+                await axiosInstance.post('/notes', payload);
             }
             onCreated();
+        } catch (error) {
+            console.error("Error al crear la nota:", error);
         } finally {
             setSubmitting(false);
         }
@@ -498,32 +512,15 @@ function NewNoteModal({ onClose, onCreated }) {
                     <span>Generar contenido con IA</span>
                 </label>
 
-                {useAi ? (
+                {/* SOLO MOSTRAMOS EL TEXTAREA SI EL CHECKBOX DE IA ESTÁ ACTIVADO */}
+                {useAi && (
                     <textarea
                         className="input-field"
-                        placeholder={type === 'TEXT' ? '¿Qué quieres redactar?' : '¿De qué trata la lista?'}
+                        placeholder={type === 'TEXT' ? '¿Qué quieres que redacte la IA?' : '¿De qué quieres que trate la lista?'}
                         value={prompt}
                         onChange={(e) => setPrompt(e.target.value)}
                         required
                         rows={4}
-                    />
-                ) : type === 'TEXT' ? (
-                    <textarea
-                        className="input-field"
-                        placeholder="Escribe tu contenido aquí..."
-                        value={content}
-                        onChange={(e) => setContent(e.target.value)}
-                        required
-                        rows={5}
-                    />
-                ) : (
-                    <textarea
-                        className="input-field"
-                        placeholder={'Un elemento por línea:\nElemento 1\nElemento 2'}
-                        value={itemsText}
-                        onChange={(e) => setItemsText(e.target.value)}
-                        required
-                        rows={5}
                     />
                 )}
 

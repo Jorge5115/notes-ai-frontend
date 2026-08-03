@@ -296,8 +296,8 @@ body {
     display: flex;
     flex-direction: column;
     gap: 1.2rem;
-    width: 85vw;
-    max-width: 1100px; /* Ancho cómodo para escritorio */
+    width: 88vw;
+    max-width: 1180px; /* Ancho cómodo para escritorio */
     max-height: 90vh;
     overflow-y: auto;
     padding-right: 4px;

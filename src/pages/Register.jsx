@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import './Auth.css';
 
 export default function Register() {
     const [name, setName] = useState('');
@@ -22,19 +23,29 @@ export default function Register() {
     };
 
     return (
-        <div>
-            <h2>Crear cuenta</h2>
-            <form onSubmit={handleSubmit}>
-                <input type="text" placeholder="Nombre" value={name}
-                       onChange={(e) => setName(e.target.value)} required />
-                <input type="email" placeholder="Email" value={email}
-                       onChange={(e) => setEmail(e.target.value)} required />
-                <input type="password" placeholder="Contraseña (mín. 6 caracteres)" value={password}
-                       onChange={(e) => setPassword(e.target.value)} required />
-                {error && <p style={{ color: 'red' }}>{error}</p>}
-                <button type="submit">Registrarme</button>
-            </form>
-            <p>¿Ya tienes cuenta? <Link to="/login">Inicia sesión</Link></p>
+        <div className="auth-page">
+            <div className="auth-card">
+                <div className="auth-brand">
+                    <span className="auth-pill">Notes AI</span>
+                    <h2 className="auth-title">Crear cuenta</h2>
+                    <p className="auth-subtitle">Crea tu espacio y empieza a organizar tus ideas.</p>
+                </div>
+
+                <form className="auth-form" onSubmit={handleSubmit}>
+                    <input className="auth-input" type="text" placeholder="Nombre" value={name}
+                           onChange={(e) => setName(e.target.value)} required />
+                    <input className="auth-input" type="email" placeholder="Email" value={email}
+                           onChange={(e) => setEmail(e.target.value)} required />
+                    <input className="auth-input" type="password" placeholder="Contraseña (mín. 6 caracteres)" value={password}
+                           onChange={(e) => setPassword(e.target.value)} required />
+                    {error && <p className="auth-error">{error}</p>}
+                    <button className="auth-button primary" type="submit">Registrarme</button>
+                </form>
+
+                <p className="auth-footer">
+                    ¿Ya tienes cuenta? <Link className="auth-link" to="/login">Inicia sesión</Link>
+                </p>
+            </div>
         </div>
     );
 }

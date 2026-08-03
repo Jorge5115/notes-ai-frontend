@@ -1,0 +1,567 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+    --bg-dark: #0f172a;
+    --card-bg: #1e293b;
+    --card-hover: #334155;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --accent: #38bdf8;
+    --accent-hover: #0284c7;
+    --danger: #ef4444;
+    --border: #334155;
+}
+
+body {
+    background: linear-gradient(
+        to right, 
+        #0d1220 0%,            
+        var(--bg-dark) 20%,     /* Transición suave hacia el fondo normal */
+        var(--bg-dark) 80%,     /* Mantiene tu fondo oscuro en el centro */
+        #0d1220 100%           /* Color más oscuro/saturado en el borde derecho */
+    );
+    background-attachment: fixed; /* Mantiene el degradado fijo al hacer scroll */
+    color: var(--text-main);
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+}
+
+/* -------------------------------------------------- */
+/* LAYOUT PRINCIPAL (ESCRITORIO ANCHO)                */
+/* -------------------------------------------------- */
+.board-layout {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 2.5rem 2rem;
+    min-height: 100vh;
+}
+
+.board-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.board-eyebrow {
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    font-weight: 600;
+}
+
+.board-title {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.btn-logout {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    padding: 0.5rem 1.2rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.btn-logout:hover {
+    color: var(--text-main);
+    border-color: var(--text-main);
+}
+
+/* Filtros superiores */
+.board-filters {
+    display: flex;
+    gap: 0.6rem;
+    margin-bottom: 2rem;
+}
+
+.filter-pill {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    padding: 0.5rem 1.2rem;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+}
+
+.filter-pill.active, 
+.filter-pill:hover {
+    background: var(--accent);
+    color: #000;
+    border-color: var(--accent);
+    font-weight: 600;
+}
+
+/* -------------------------------------------------- */
+/* GRID DE NOTAS (VISTA GENERAL)                      */
+/* -------------------------------------------------- */
+.notes-grid {
+        display: grid;
+        gap: 1.5rem;
+        grid-template-columns: repeat(3, 1fr); /* default: 3 equal columns on desktop */
+        align-items: start;
+}
+
+/* Responsive: 2 columns on medium, 1 on small */
+@media (max-width: 1024px) {
+    .notes-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 720px) {
+    .notes-grid { grid-template-columns: 1fr; }
+}
+
+.note-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.3rem;
+    cursor: grab;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    height: 200px;
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    user-select: none;
+    overflow: hidden;
+}
+
+.note-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--accent);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.35);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.6rem;
+}
+
+.card-tag {
+    font-size: 0.72rem;
+    color: var(--accent);
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.btn-icon-delete {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 1rem;
+}
+.btn-icon-delete:hover { color: var(--danger); }
+
+.card-title {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.15rem;
+    color: var(--text-main);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.card-preview {
+    flex: 1;
+    overflow: hidden;
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    min-width: 0;
+}
+
+.text-snippet {
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: 1.4;
+    text-align: left;
+    white-space: pre-line; /* Respeta los saltos de línea (\n) del texto original */
+}
+
+.checklist-snippet {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    text-align: left; /* Alineado a la izquierda exacto */
+}
+
+.text-snippet-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem; /* Espaciado entre cada línea */
+    overflow: hidden;
+}
+
+.single-line-text {
+    margin: 0;
+    width: 100%;
+    white-space: nowrap;       /* OBLIGA a que no pase a la siguiente línea */
+    overflow: hidden;          /* Oculta lo que se salga de la tarjeta */
+    text-overflow: ellipsis;   /* Agrega el "..." al final cuando no cabe */
+    text-align: left;
+}
+
+.checklist-snippet li {
+    margin-bottom: 0.25rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+.checklist-snippet li.checked {
+    text-decoration: line-through;
+    opacity: 0.5;
+}
+
+.more-items {
+    font-size: 0.8rem;
+    color: var(--accent);
+    font-weight: 500;
+    margin-top: 0.2rem;
+}
+
+.summary-badge {
+    margin-top: 0.5rem;
+    font-size: 0.72rem;
+    color: #4ade80;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+/* Botón flotante (+) */
+.fab {
+    position: fixed;
+    bottom: 2.5rem;
+    right: 2.5rem;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #000;
+    font-size: 2.2rem;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(56, 189, 248, 0.4);
+    transition: transform 0.2s;
+}
+.fab:hover { transform: scale(1.08); }
+
+/* Desktop-only positioning when there are only 1 or 2 items.
+     Use modifier classes added by React: .few-items-1 and .few-items-2 */
+@media (min-width: 1025px) {
+    .notes-grid.few-items-1 .note-card:first-child {
+        grid-column: 2 / span 1; /* place single card in middle column */
+    }
+
+    .notes-grid.few-items-2 .note-card:nth-child(1) {
+        grid-column: 2 / span 1; /* first card to middle */
+    }
+    .notes-grid.few-items-2 .note-card:nth-child(2) {
+        grid-column: 3 / span 1; /* second card to right */
+    }
+}
+
+/* -------------------------------------------------- */
+/* MODALES Y CAPA FLOTANTE                            */
+/* -------------------------------------------------- */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 1.5rem;
+}
+
+/* Contenedor apilado (Ventana Nota + Ventana IA abajo) */
+.modal-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    width: 85vw;
+    max-width: 1100px; /* Ancho cómodo para escritorio */
+    max-height: 90vh;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+.modal-stack {
+    scrollbar-width: none; /* Firefox */
+}
+.modal-stack::-webkit-scrollbar {
+    display: none; /* Chrome/Edge */
+}
+
+.modal-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.8rem;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+}
+
+.modal-desktop-extra-wide {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.modal-create {
+    width: 100%;
+    max-width: 480px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.btn-close {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.3rem;
+    cursor: pointer;
+}
+
+.modal-title-input {
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid var(--border);
+    color: var(--text-main);
+    font-size: 1.5rem;
+    font-weight: 700;
+    padding: 0.3rem 0;
+    outline: none;
+    width: 100%;
+    margin-top: 0.5rem;
+    margin-bottom: 1rem;
+}
+.modal-title-input:focus {
+    border-color: var(--accent);
+}
+
+.col-label {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+}
+
+.content-label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.6rem;
+}
+
+.ai-quick-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.editor-textarea {
+    width: 100%;
+    background: var(--bg-dark);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem;
+    color: var(--text-main);
+    font-family: inherit;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    resize: vertical;
+    box-sizing: border-box;
+}
+.editor-textarea:focus {
+    border-color: var(--accent);
+    outline: none;
+}
+.editor-textarea,
+.input-field {
+    resize: none;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    border-top: 1px solid var(--border);
+    padding-top: 1rem;
+    margin-top: 1.2rem;
+}
+
+/* -------------------------------------------------- */
+/* SUBVENTANA FLOTANTE IA (MISMO ANCHO, ABAJO)         */
+/* -------------------------------------------------- */
+.ai-floating-card {
+    width: 100%;
+    box-sizing: border-box;
+    background: #182232;
+    border: 1px solid var(--accent);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+    animation: fadeIn 0.25s ease-in-out;
+}
+
+.font-ai {
+    color: var(--accent);
+}
+
+.ai-floating-header {
+    margin-bottom: 0.6rem;
+}
+
+.ai-floating-content p {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #e2e8f0;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* -------------------------------------------------- */
+/* ELEMENTOS Y BOTONES DE EDICIÓN                     */
+/* -------------------------------------------------- */
+.edit-actions {
+    display: flex;
+    gap: 0.8rem;
+    margin-left: auto;
+}
+
+.btn-primary {
+    background: var(--accent);
+    color: #000;
+    font-weight: 600;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.btn-secondary {
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.btn-danger {
+    background: transparent;
+    color: var(--danger);
+    border: 1px solid var(--danger);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.btn-action-ai {
+    background: var(--accent);
+    color: #000;
+    border: none;
+    padding: 0.45rem 0.8rem;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+.btn-action-ai.outline {
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+}
+.btn-action-ai:disabled { opacity: 0.5; cursor: default; }
+
+/* Checklist modal */
+.full-checklist {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+.full-checklist::-webkit-scrollbar {
+    display: none;
+}
+.full-checklist label {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    cursor: pointer;
+}
+.full-checklist span.checked {
+    text-decoration: line-through;
+    color: var(--text-muted);
+}
+
+/* Inputs de creación */
+.input-field {
+    width: 100%;
+    background: var(--bg-dark);
+    border: 1px solid var(--border);
+    color: var(--text-main);
+    padding: 0.75rem;
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-family: inherit;
+}
+
+.type-toggle {
+    display: flex;
+    gap: 0.5rem;
+}
+.type-toggle button {
+    flex: 1;
+    padding: 0.5rem;
+    background: var(--bg-dark);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    border-radius: 8px;
+    cursor: pointer;
+}
+.type-toggle button.active {
+    background: var(--accent);
+    color: #000;
+    font-weight: 600;
+}
+
+.ai-switch {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--accent);
+    cursor: pointer;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+}

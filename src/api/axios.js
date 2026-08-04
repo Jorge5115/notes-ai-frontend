@@ -1,7 +1,11 @@
 import axios from 'axios';
 
-// Vite usa import.meta.env en vez de process.env (eso cambia respecto a Create React App)
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
+// 1. Tomamos la URL base limpia
+const rawUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+
+// 2. Normalizamos la URL eliminando una barra al final si existiera y asegurando '/api'
+const cleanUrl = rawUrl.replace(/\/+$/, '');
+const API_URL = cleanUrl.endsWith('/api') ? cleanUrl : `${cleanUrl}/api`;
 
 const axiosInstance = axios.create({
     baseURL: API_URL,

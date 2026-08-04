@@ -3,6 +3,9 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './Auth.css';
 
+// Toma la URL del backend de Vercel o usa localhost si estás en desarrollo local
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+
 export default function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -19,6 +22,10 @@ export default function Login() {
         } catch (err) {
             setError('Credenciales inválidas');
         }
+    };
+
+    const handleGoogleLogin = () => {
+        window.location.href = `${API_URL}/oauth2/authorization/google`;
     };
 
     return (
@@ -40,7 +47,7 @@ export default function Login() {
                 </form>
 
                 <div className="auth-divider">o</div>
-                <button className="auth-button secondary" onClick={() => window.location.href = 'http://localhost:8080/oauth2/authorization/google'}>
+                <button className="auth-button secondary" onClick={handleGoogleLogin}>
                     Continuar con Google
                 </button>
 

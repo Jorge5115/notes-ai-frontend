@@ -17,54 +17,21 @@ React + Vite client for Notes AI, a smart note-taking app with AI-powered summar
 | Build tool | Vite |
 | HTTP client | Fetch / Axios (adjust to match your implementation) |
 | CI/CD | GitHub Actions |
-| Deployment | Vercel |
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js 18+
-- The [notes-ai-backend](https://github.com/Jorge5115/notes-ai-backend) running locally or deployed
-
-### Environment Variables
-
-Create a `.env` file in the project root:
-
-```
-VITE_API_BASE_URL=http://localhost:8080
-VITE_GOOGLE_CLIENT_ID=your_google_client_id
-```
-
-### Installation
-
-```bash
-git clone https://github.com/Jorge5115/notes-ai-frontend.git
-cd notes-ai-frontend
-npm install
-```
-
-### Run in development
-
-```bash
-npm run dev
-```
-
-The app will be available at `http://localhost:5173`.
-
-### Build for production
-
-```bash
-npm run build
-npm run preview
-```
+| Deployment | Vercel (free tier) |
 
 ## CI/CD
 
 GitHub Actions runs automatically on every push/PR to `main`, installing dependencies, building the project, and (if configured) running linting/tests before deployment.
 
+## Live Demo
+
+- App: https://notes-ai-frontend.vercel.app/login
+
+> The whole stack (Vercel frontend, Render backend, Aiven MySQL, and Groq API) runs entirely on free tiers — no paid infrastructure required to reproduce this setup.
+
 ## Related Project
 
-- Backend: [notes-ai-backend](https://github.com/Jorge5115/notes-ai-backend) (Spring Boot, JWT + OAuth2, Groq AI, Docker)
+- Backend: [notes-ai-backend](https://github.com/Jorge5115/notes-ai-backend) (Spring Boot, JWT + OAuth2, Groq AI, Docker, deployed on Render)
 
 ## Author
 
